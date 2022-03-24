@@ -17,7 +17,7 @@ uvicorn
 httptools
 
 # Databases
-psycopg2-binary
+
 dj-database-url
 
 # Distributed tasks
