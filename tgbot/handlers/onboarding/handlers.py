@@ -65,7 +65,6 @@ def start(update: Update, context: CallbackContext) -> int:
     
 
 def typing(update: Update, context: CallbackContext):     
-    print("typingggggg\n\n")
     update_json = update.to_dict()    
     message = update.message
     text = update.message.text      
@@ -90,13 +89,14 @@ def typing(update: Update, context: CallbackContext):
     elif message.video: 
         file_id = _get_file_id(update_json["message"])
         update.message.bot.send_video(chat_id = to_customer, video = file_id)
+    elif message.video_note: 
+        file_id = _get_file_id(update_json["message"])
+        update.message.bot.send_video_note(chat_id = to_customer, video_note = file_id)
     elif message.text:
         update.message.bot.send_message(chat_id = to_customer,text=text)   
     return TYPING
     
 def file(update: Update, context: CallbackContext) -> int:
-    print("ishlamayabdi\n\n")
-
     u = User.get_user(update, context)
     if u.user_id not in admins:
         update_json = update.to_dict()
