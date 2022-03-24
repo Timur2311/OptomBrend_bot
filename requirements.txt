@@ -12,7 +12,7 @@ django-debug-toolbar
 
 # Django 3.0 async requirements
 gunicorn
-uvicorn
+# uvicorn
 # uvloop
 httptools
 
