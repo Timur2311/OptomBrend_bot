@@ -64,7 +64,8 @@ def start(update: Update, context: CallbackContext) -> int:
     
     
 
-def typing(update: Update, context: CallbackContext) -> int:     
+def typing(update: Update, context: CallbackContext):     
+    print("typingggggg\n\n")
     update_json = update.to_dict()    
     message = update.message
     text = update.message.text      
@@ -94,7 +95,8 @@ def typing(update: Update, context: CallbackContext) -> int:
     return TYPING
     
 def file(update: Update, context: CallbackContext) -> int:
-    
+    print("ishlamayabdi\n\n")
+
     u = User.get_user(update, context)
     if u.user_id not in admins:
         update_json = update.to_dict()
