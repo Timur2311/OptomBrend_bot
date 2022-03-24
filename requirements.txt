@@ -14,7 +14,7 @@ django-debug-toolbar
 gunicorn
 # uvicorn
 # uvloop
-httptools
+# httptools
 
 # Databases
 
