@@ -36,7 +36,7 @@ def setup_dispatcher(dp):
     Adding handlers for events from Telegram
     """
     # onboarding
-    # dp.add_handler(CommandHandler("start", onboarding_handlers.start))
+    dp.add_handler(CommandHandler("start", onboarding_handlers.start))
 
     # admin commands
     dp.add_handler(CommandHandler("admin", admin_handlers.admin))
@@ -117,51 +117,51 @@ def process_telegram_event(update_json):
     dispatcher.process_update(update)
 
 
-def set_up_commands(bot_instance: Bot) -> None:
-    langs_with_commands: Dict[str, Dict[str, str]] = {
-        'en': {
-            'start': 'Start bot',
+# def set_up_commands(bot_instance: Bot) -> None:
+#     langs_with_commands: Dict[str, Dict[str, str]] = {
+#         'en': {
+#             'start': 'Start bot',
             
-        },
-        'es': {
-            'start': 'Iniciar el bot de django 🚀',
-            'stats': 'Estadísticas de bot 📊',
-            'admin': 'Mostrar información de administrador ℹ️',
-            'ask_location': 'Enviar ubicación 📍',
-            'broadcast': 'Mensaje de difusión 📨',
-            'export_users': 'Exportar users.csv 👥',
-        },
-        'fr': {
-            'start': 'Démarrer le bot Django 🚀',
-            'stats': 'Statistiques du bot 📊',
-            'admin': "Afficher les informations d'administrateur ℹ️",
-            'ask_location': 'Envoyer emplacement 📍',
-            'broadcast': 'Message de diffusion 📨',
-            "export_users": 'Exporter users.csv 👥',
-        },
-        'ru': {
-            'start': 'Запустить django бота 🚀',
-            'stats': 'Статистика бота 📊',
-            'admin': 'Показать информацию для админов ℹ️',
-            'broadcast': 'Отправить сообщение 📨',
-            'ask_location': 'Отправить локацию 📍',
-            'export_users': 'Экспорт users.csv 👥',
-        }
-    }
+#         },
+#         'es': {
+#             'start': 'Iniciar el bot de django 🚀',
+#             'stats': 'Estadísticas de bot 📊',
+#             'admin': 'Mostrar información de administrador ℹ️',
+#             'ask_location': 'Enviar ubicación 📍',
+#             'broadcast': 'Mensaje de difusión 📨',
+#             'export_users': 'Exportar users.csv 👥',
+#         },
+#         'fr': {
+#             'start': 'Démarrer le bot Django 🚀',
+#             'stats': 'Statistiques du bot 📊',
+#             'admin': "Afficher les informations d'administrateur ℹ️",
+#             'ask_location': 'Envoyer emplacement 📍',
+#             'broadcast': 'Message de diffusion 📨',
+#             "export_users": 'Exporter users.csv 👥',
+#         },
+#         'ru': {
+#             'start': 'Запустить django бота 🚀',
+#             'stats': 'Статистика бота 📊',
+#             'admin': 'Показать информацию для админов ℹ️',
+#             'broadcast': 'Отправить сообщение 📨',
+#             'ask_location': 'Отправить локацию 📍',
+#             'export_users': 'Экспорт users.csv 👥',
+#         }
+#     }
 
-    bot_instance.delete_my_commands()
-    for language_code in langs_with_commands:
-        bot_instance.set_my_commands(
-            language_code=language_code,
-            commands=[
-                BotCommand(command, description) for command, description in langs_with_commands[language_code].items()
-            ]
-        )
+#     bot_instance.delete_my_commands()
+#     for language_code in langs_with_commands:
+#         bot_instance.set_my_commands(
+#             language_code=language_code,
+#             commands=[
+#                 BotCommand(command, description) for command, description in langs_with_commands[language_code].items()
+#             ]
+#         )
 
 
-# WARNING: it's better to comment the line below in DEBUG mode.
-# Likely, you'll get a flood limit control error, when restarting bot too often
-set_up_commands(bot)
+# # WARNING: it's better to comment the line below in DEBUG mode.
+# # Likely, you'll get a flood limit control error, when restarting bot too often
+# set_up_commands(bot)
 
 n_workers = 0 if DEBUG else 4
 dispatcher = setup_dispatcher(Dispatcher(bot, update_queue=None, workers=n_workers, use_context=True))
