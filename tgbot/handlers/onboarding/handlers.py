@@ -39,7 +39,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
     
-FILE, TYPING = range(2)
+FILE, TYPING, MEDIA = range(3)
 
     
 
@@ -101,16 +101,12 @@ def file(update: Update, context: CallbackContext) -> int:
     if u.user_id not in admins:
         update_json = update.to_dict()
         message_id = update_json["message"]["message_id"]
-        # if  "media_group_id" in update_json["message"]:
-        #     print(u.is_blocked_bot)
-        #     if u.is_blocked_bot:                
-        #         update.message.reply_text(text='Murojaatingiz qabul qilindi! Javobni kuting...',parse_mode=telegram.ParseMode.HTML)
-        #         u.is_blocked_bot = False
-        #         u.save
-        #     context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
-
-        #     print(u.is_blocked_bot)
-        #     return MEDIA
+        if  "media_group_id" in update_json["message"] and u.media_id!=update.message.media_group_id:            
+            u.media_id = update_json["message"]["media_group_id"]
+            u.save           
+            update.message.reply_text(text='Murojaatingiz qabul qilindi! Javobni kuting...',parse_mode=telegram.ParseMode.HTML)
+            context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+            return MEDIA
             
         update.message.reply_text(
             text='Murojaatingiz qabul qilindi! Javobni kuting...',
@@ -119,6 +115,22 @@ def file(update: Update, context: CallbackContext) -> int:
         )
         context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
     return FILE
+
+def media(update: Update, context: CallbackContext) -> int:
+    u = User.get_user(update, context)
+    update_json = update.to_dict()
+    message_id = update_json["message"]["message_id"]
+    if "media_group_id" in update_json["message"]:
+        context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        return MEDIA
+    else:
+        update.message.reply_text(
+            text='Murojaatingiz qabul qilindi! Javobni kuting...',
+            parse_mode=telegram.ParseMode.HTML,
+            reply_to_message_id=message_id
+        )
+        context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        return FILE
 
 # def media(update: Update, context: CallbackContext) -> int:
 #     update.message.reply_text(text="media ga kirdi")
@@ -142,7 +154,7 @@ conv_handler = ConversationHandler(
         states={
             FILE:[MessageHandler(Filters.all, file)],
             TYPING:[MessageHandler(Filters.all , typing)],            
-            # MEDIA:[MessageHandler(Filters.all, media)]
+            MEDIA:[MessageHandler(Filters.all, media)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
         allow_reentry=False,
