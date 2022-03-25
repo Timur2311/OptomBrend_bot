@@ -64,7 +64,8 @@ def start(update: Update, context: CallbackContext) -> int:
     
     
 
-def typing(update: Update, context: CallbackContext):     
+def typing(update: Update, context: CallbackContext):    
+    u = User.get_user(update, context) 
     update_json = update.to_dict()    
     message = update.message
     text = update.message.text      
@@ -75,6 +76,9 @@ def typing(update: Update, context: CallbackContext):
         return TYPING
     
     to_customer = update_json["message"]["reply_to_message"]["forward_from"]["id"]   
+    if u.user_id == to_customer:
+        to_customer = u.user_id
+    
     if message.location:
         update.message.bot.send_location(chat_id = to_customer, latitude = message.location.latitude, longitude = message.location.longitude )  
     elif message.voice:
