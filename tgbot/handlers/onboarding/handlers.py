@@ -30,6 +30,7 @@ from telegram.ext import (
 )
 
 from tgbot.handlers.utils.files import _get_file_id
+from tgbot.models import Message
 
 admins = [1755197237,]
 
@@ -69,47 +70,57 @@ def typing(update: Update, context: CallbackContext):
     update_json = update.to_dict()    
     message = update.message
     text = update.message.text      
-    # print(message)
+    
+    
     if not "reply_to_message" in update_json["message"]:
         return TYPING
-    if not "forward_from" in update_json["message"]["reply_to_message"]:
+    if not (("forward_from" in update_json["message"]["reply_to_message"]) or ("forward_sender_name" in update_json["message"]["reply_to_message"])) :
         return TYPING
     
-    to_customer = update_json["message"]["reply_to_message"]["forward_from"]["id"]   
-    if u.user_id == to_customer:
-        to_customer = u.user_id
+    update.message.reply_text(text = f"{update}")
+    # to_customer = update_json["message"]["reply_to_message"]["forward_from"]["id"]  
+         
+    user_message = Message.objects.filter(message_id = update.message.reply_to_message.message_id)
     
-    if message.location:
-        update.message.bot.send_location(chat_id = to_customer, latitude = message.location.latitude, longitude = message.location.longitude )  
-    elif message.voice:
-        file_id = _get_file_id(update_json["message"])
-        update.message.bot.send_voice(chat_id = to_customer, voice = file_id)
-    elif message.audio: 
-        file_id = _get_file_id(update_json["message"])
-        update.message.bot.send_audio(chat_id = to_customer, audio = file_id)
-    elif message.document: 
-        file_id = _get_file_id(update_json["message"])
-        update.message.bot.send_document(chat_id = to_customer, document = file_id)
-    elif message.video: 
-        file_id = _get_file_id(update_json["message"])
-        update.message.bot.send_video(chat_id = to_customer, video = file_id)
-    elif message.video_note: 
-        file_id = _get_file_id(update_json["message"])
-        update.message.bot.send_video_note(chat_id = to_customer, video_note = file_id)
-    elif message.text:
-        update.message.bot.send_message(chat_id = to_customer,text=text)   
-    return TYPING
+    
+    if user_message:
+        user_message  = list(user_message.values('user_id'))
+        to_customer = user_message[0]["user_id"]
+        if message.location:
+            update.message.bot.send_location(chat_id = to_customer, latitude = message.location.latitude, longitude = message.location.longitude )  
+        elif message.voice:
+            file_id = _get_file_id(update_json["message"])
+            update.message.bot.send_voice(chat_id = to_customer, voice = file_id)
+        elif message.audio: 
+            file_id = _get_file_id(update_json["message"])
+            update.message.bot.send_audio(chat_id = to_customer, audio = file_id)
+        elif message.document: 
+            file_id = _get_file_id(update_json["message"])
+            update.message.bot.send_document(chat_id = to_customer, document = file_id)
+        elif message.video: 
+            file_id = _get_file_id(update_json["message"])
+            update.message.bot.send_video(chat_id = to_customer, video = file_id)
+        elif message.video_note: 
+            file_id = _get_file_id(update_json["message"])
+            update.message.bot.send_video_note(chat_id = to_customer, video_note = file_id)
+        elif message.text:
+            update.message.bot.send_message(chat_id = to_customer,text=text)   
+        return TYPING
     
 def file(update: Update, context: CallbackContext) -> int:
+    
     u = User.get_user(update, context)
     if u.user_id not in admins:
         update_json = update.to_dict()
         message_id = update_json["message"]["message_id"]
-        if  "media_group_id" in update_json["message"] and u.media_id!=update.message.media_group_id:            
+        if  "media_group_id" in update_json["message"] and u.media_id!=update.message.media_group_id:      
             u.media_id = update_json["message"]["media_group_id"]
-            u.save           
+                     
             update.message.reply_text(text='Murojaatingiz qabul qilindi! Javobni kuting...',parse_mode=telegram.ParseMode.HTML)
-            context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+            forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+            user_message = Message(message_id = forwarded_message.message_id, user_id = u)
+            user_message.save()
+            
             return MEDIA
             
         update.message.reply_text(
@@ -117,7 +128,14 @@ def file(update: Update, context: CallbackContext) -> int:
             parse_mode=telegram.ParseMode.HTML,
             reply_to_message_id=message_id
         )
-        context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        user_message = Message(message_id = forwarded_message.message_id, user_id = u)
+        user_message.save()
+        
+
+
+        
+
     return FILE
 
 def media(update: Update, context: CallbackContext) -> int:
@@ -125,7 +143,10 @@ def media(update: Update, context: CallbackContext) -> int:
     update_json = update.to_dict()
     message_id = update_json["message"]["message_id"]
     if "media_group_id" in update_json["message"]:
-        context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        user_message = Message(message_id = forwarded_message.message_id, user_id = u)
+        user_message.save()
+        
         return MEDIA
     else:
         update.message.reply_text(
@@ -133,7 +154,11 @@ def media(update: Update, context: CallbackContext) -> int:
             parse_mode=telegram.ParseMode.HTML,
             reply_to_message_id=message_id
         )
-        context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        user_message = Message(message_id = forwarded_message.message_id, user_id = u)
+        user_message.save()
+        
+        print(f"user_message-----{user_message}")
         return FILE
 
 # def media(update: Update, context: CallbackContext) -> int:

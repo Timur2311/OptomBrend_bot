@@ -1,4 +1,5 @@
 from __future__ import annotations
+from pyexpat import model
 
 from typing import Union, Optional, Tuple
 
@@ -39,7 +40,7 @@ class User(CreateUpdateTracker):
         """ python-telegram-bot's Update, Context --> User instance """
         data = extract_user_data_from_update(update)
         u, created = cls.objects.update_or_create(user_id=data["user_id"], defaults=data)
-        print("asdasdasd\n\nasdasdasd")
+        
         if created:
             # Save deep_link to User model
             if context is not None and context.args is not None and len(context.args) > 0:
@@ -47,7 +48,7 @@ class User(CreateUpdateTracker):
                 if str(payload).strip() != str(data["user_id"]).strip():  # you can't invite yourself
                     u.deep_link = payload
                     u.save()
-        print(u)
+        
         return u, created
 
     @classmethod
@@ -73,6 +74,14 @@ class User(CreateUpdateTracker):
             return f'@{self.username}'
         return f"{self.first_name} {self.last_name}" if self.last_name else f"{self.first_name}"
 
+
+
+
+class Message(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    message_id = models.IntegerField(blank=True, null=True)
+    
+    
 
 class Location(CreateTracker):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
