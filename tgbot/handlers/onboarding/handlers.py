@@ -91,7 +91,7 @@ def typing(update: Update, context: CallbackContext):
         elif message.photo:
             file_id = _get_file_id(update_json["message"])
             update.message.bot.send_photo(chat_id = to_customer, photo = file_id )
-        elif message.stocker:
+        elif message.sticker:
             file_id = _get_file_id(update_json["message"])
             update.message.bot.send_sticker(chat_id = to_customer, sticker = file_id )
         elif message.voice:
