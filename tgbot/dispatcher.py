@@ -43,7 +43,7 @@ def setup_dispatcher(dp):
     dp.add_handler(CommandHandler("admin", admin_handlers.admin))
     dp.add_handler(CommandHandler("stats", admin_handlers.stats))
     dp.add_handler(CommandHandler('export_users', admin_handlers.export_users))
-    dp.add_handler( MessageHandler(Filters.chat(-1001791090482), handlers.typing)),
+    dp.add_handler( MessageHandler(Filters.chat(-1001783720615), handlers.typing)),
     dp.add_handler( MessageHandler(Filters.all, handlers.typing))
     # dp.add_handler(MessageHandler(Filters.text, onboarding_handlers.texting))
 
