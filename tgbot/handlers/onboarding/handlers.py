@@ -89,6 +89,7 @@ def typing(update: Update, context: CallbackContext):
         if message.location:
             update.message.bot.send_location(chat_id = to_customer, latitude = message.location.latitude, longitude = message.location.longitude )  
         elif message.photo:
+            file_id = _get_file_id(update_json["message"])
             update.message.bot.send_photo(chat_id = to_customer, photo = file_id )
         elif message.voice:
             file_id = _get_file_id(update_json["message"])
