@@ -77,7 +77,7 @@ def typing(update: Update, context: CallbackContext):
     if not (("forward_from" in update_json["message"]["reply_to_message"]) or ("forward_sender_name" in update_json["message"]["reply_to_message"])) :
         return TYPING
     
-    update.message.reply_text(text = f"{update}")
+    
     # to_customer = update_json["message"]["reply_to_message"]["forward_from"]["id"]  
          
     user_message = Message.objects.filter(message_id = update.message.reply_to_message.message_id)
