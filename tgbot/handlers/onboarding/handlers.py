@@ -32,7 +32,7 @@ from telegram.ext import (
 from tgbot.handlers.utils.files import _get_file_id
 from tgbot.models import Message
 
-admins = [1755197237,]
+admins = [1755197237,3035406,397004729]
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -123,7 +123,7 @@ def file(update: Update, context: CallbackContext) -> int:
             u.media_id = update_json["message"]["media_group_id"]
                      
             update.message.reply_text(text='Murojaatingiz qabul qilindi! Javobni kuting...',parse_mode=telegram.ParseMode.HTML)
-            forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+            forwarded_message = context.bot.forward_message(chat_id = '-1001791090482', from_chat_id = update.message.chat.id, message_id = message_id)
             user_message = Message(message_id = forwarded_message.message_id, user_id = u)
             user_message.save()
             
@@ -134,7 +134,7 @@ def file(update: Update, context: CallbackContext) -> int:
             parse_mode=telegram.ParseMode.HTML,
             reply_to_message_id=message_id
         )
-        forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        forwarded_message = context.bot.forward_message(chat_id = '-1001791090482', from_chat_id = update.message.chat.id, message_id = message_id)
         user_message = Message(message_id = forwarded_message.message_id, user_id = u)
         user_message.save()
         
@@ -149,7 +149,7 @@ def media(update: Update, context: CallbackContext) -> int:
     update_json = update.to_dict()
     message_id = update_json["message"]["message_id"]
     if "media_group_id" in update_json["message"]:
-        forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        forwarded_message = context.bot.forward_message(chat_id = '-1001791090482', from_chat_id = update.message.chat.id, message_id = message_id)
         user_message = Message(message_id = forwarded_message.message_id, user_id = u)
         user_message.save()
         
@@ -160,7 +160,7 @@ def media(update: Update, context: CallbackContext) -> int:
             parse_mode=telegram.ParseMode.HTML,
             reply_to_message_id=message_id
         )
-        forwarded_message = context.bot.forward_message(chat_id = '-1001572519768', from_chat_id = update.message.chat.id, message_id = message_id)
+        forwarded_message = context.bot.forward_message(chat_id = '-1001791090482', from_chat_id = update.message.chat.id, message_id = message_id)
         user_message = Message(message_id = forwarded_message.message_id, user_id = u)
         user_message.save()
         
